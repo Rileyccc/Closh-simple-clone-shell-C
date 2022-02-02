@@ -65,39 +65,85 @@ int main() {
         // to implement the rest of closh                     //
         //                                                    //
         // /////////////////////////////////////////////////////
+        
+        
+        //array to keep track of forked pids for parrallel proccesses 
+        int pids[count];
+        int stat;
+        //variable to hold pid for sequential proccesses
         int pid;
-        if(parallel){
 
-        }else{
+
+        if(parallel){
+            
+            // run the proccess parrallelly 
             for(int i = 0; i < count; i++){
                 // fork so child can call execvp
-                pid = fork();
+                pids[i] = fork();
                 // pid == 0 is the child process
-                if(pid == 0 ){
-                    //print pid and parent pid
+                
+                if(pids[i] == 0){
+                    // print pid and parent pid
                     printf("I am a child process and my pid is %d, and my parent id is %d\n", getpid(), getppid());
-                    //force child to empty buffer
+                    // force child to empty buffer
                     fflush(stdout);
                     // excute specified command
                     execvp(cmdTokens[0], cmdTokens);
                     //error statement if command doesnt work 
                     printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
-                    //exit so parent process can continue
+                    // exit if error ouccurs
                     exit(1);
+
+                // if pid < 0 means fork was unsucessful   
+                }else if(pid < 0){
+                    printf("Process could not be created");
+                    exit(1);
+                }
+            }
+            
+            // parent proccess will wait for all processes to finish
+            for(int i = 0; i < count; i++){
+                waitpid(pids[i], &stat, 0);
+                // can comment out just here to check if processes are completing
+                printf("process %d is complete\n", pids[i]);
+            }
+
+        }else{
+            for(int i = 0; i < count; i++){
+                // fork so child can call execvp
+                pid = fork();
+                
+                // pid == 0 is the child process
+                if(pid == 0 ){
+                    // print pid and parent pid
+                    printf("I am a child process and my pid is %d, and my parent id is %d\n", getpid(), getppid());
+                    // force child to empty buffer
+                    fflush(stdout);
+                    // excute specified command
+                    execvp(cmdTokens[0], cmdTokens);
+                    // error statement if command doesnt work 
+                    printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
+                    // exit if error ouccurs
+                    exit(1);
+                
+                // if pid < 0 means fork was unsucessful 
+                }else if(pid < 0){
+                    printf("Processes could not be created");
+                    exit(1);
+                
+                // parent process will wait til here child process is done
                 }else{
                     // wait for child process to finish 
                     wait(NULL);
                 }
             }
-
         }
         
-        //printf("yello ");
         // just executes the given command once - REPLACE THIS CODE WITH YOUR OWN
         //execvp(cmdTokens[0], cmdTokens); // replaces the current process with the given program
         // doesn't return unless the calling failed
         //printf("Can't execute %s\n", cmdTokens[0]); // only reached if running the program failed
-        exit(1);        
+              
     }
 }
 
