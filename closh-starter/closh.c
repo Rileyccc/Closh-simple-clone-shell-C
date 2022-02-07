@@ -74,10 +74,25 @@ int main() {
         //variable to hold pid for sequential proccesses
         int pid;
         
-        // timeout int 1 to 9 specififying max duration, t = 0 no timeout, t > time term, reset if sequential
-        // idk how to set up a timer
-        int timer; 
-       
+// aalia's input 
+        
+        // reconstructing an example online
+        
+        // int sec = 0;
+        // int timeout = 9;
+        // timer_t before = timer;
+        
+        // do {
+            // timer_t difference = timer() - before;
+            // sec = difference;
+        // iterate
+        // the ex shows do-while but i wanna use an if-else so someones gonna have to explain why that is
+        // } while (sec < timeout);
+        
+        time_t timer;
+        struct tm * info;
+        time( &timer);
+        info = int tm_sec; 
         
         // int timeout (int seconds);{ 
             if (timeout == 0){
@@ -90,7 +105,7 @@ int main() {
                 return count;
             }
             
-           
+ // end of my work
             
 
         if(parallel){
