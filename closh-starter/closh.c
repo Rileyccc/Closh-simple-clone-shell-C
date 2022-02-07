@@ -1,7 +1,7 @@
 // closh.c - COSC 315, Winter 2020
 // Riley Clark
 // Reid
-// Allia
+// Aalia Omarali
 
 #include <stdio.h>
 #include <unistd.h>
@@ -9,6 +9,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <time.h>
 
 #define TRUE 1
 #define FALSE 0
@@ -72,7 +73,25 @@ int main() {
         int stat;
         //variable to hold pid for sequential proccesses
         int pid;
-
+        
+        // timeout int 1 to 9 specififying max duration, t = 0 no timeout, t > time term, reset if sequential
+        // idk how to set up a timer
+        int timer; 
+       
+        
+        // int timeout (int seconds);{ 
+            if (timeout == 0){
+                return 0;
+            }
+            else if (timeout > count){
+                exit();
+            }
+            else {
+                return count;
+            }
+            
+           
+            
 
         if(parallel){
             
