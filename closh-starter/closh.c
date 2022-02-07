@@ -31,6 +31,78 @@ char readChar() {
     return c;
 }
 
+// takes a time in seconds and deletes a processes if it as been running longer than the timeout time
+void timeoutHandlerSequential(int timeout, int pid){
+    int stat;
+    // variables for determining change in time
+    time_t before = time(NULL);
+    time_t after;
+    double difference = 0;
+    // let processes run for specified time and check if it has completed
+    while(difference <= timeout){
+        after = time(NULL);
+        // find difference in time
+        difference = difftime(after, before);
+        // get status of child
+        waitpid(pid, &stat, WNOHANG);
+        // if child process has completed return back to the program
+        if(WIFEXITED(stat)){
+            // allow child to terminate
+            wait(NULL);
+            return; 
+        }
+    }
+    // if time runs out kill process
+    printf("Process: %d has been terminated due to a timeout", pid);
+    kill(pid, SIGKILL); 
+}
+
+// takes a time in seconds and deletes a processes if it as been running longer than the timeout time
+void timeoutHandlerParallel(int timeout, int pids[], int count){
+    int stat;
+    // variables for determining change in time
+    time_t before = time(NULL);
+    time_t after;
+    double difference = 0;
+    // keep track of the number of processes which are done
+    int done = 0;
+    // let processes run for specified time and check if it has completed
+    while(difference <= timeout){
+        after = time(NULL);
+        // find difference in time
+        difference = difftime(after, before);
+        for(int i = 0; i < count ; i++){
+            // if the value is 1000000 then it is complete 
+            if(pids[i] == 1000000){
+                continue;
+            }
+            // get status of child
+            waitpid(pids[i], &stat, WNOHANG);
+            // check if process is complete
+            if(WIFEXITED(stat)){
+                // let child terminate
+                waitpid(pids[i], &stat, 0);
+                // set to pid of the child to 1000000 so we can know its done
+                pids[i] = 1000000; 
+                // if all processes are complete return back to the normal flow
+                if(++done != count){
+                    sleep(1);
+                    return;
+                }
+            }
+        }
+    }
+    // if timeout oucurs kill processes that are not complete
+    for(int i = 0; i < count; i++){
+        if(pids[i] == 1000000){
+            continue;
+        }
+        kill(pids[i], SIGKILL); 
+        printf("Process: %d has been terminated due to a timeout\n", pids[i]);
+    }
+}
+        
+
 // main method - program entry point
 int main() {
     char cmd[81]; // array of chars (a string)
@@ -70,43 +142,8 @@ int main() {
         
         //array to keep track of forked pids for parrallel proccesses 
         int pids[count];
-        int stat;
         //variable to hold pid for sequential proccesses
         int pid;
-        
-// aalia's input 
-        
-        // reconstructing an example online
-        
-        // int sec = 0;
-        // int timeout = 9;
-        // timer_t before = timer;
-        
-        // do {
-            // timer_t difference = timer() - before;
-            // sec = difference;
-        // iterate
-        // the ex shows do-while but i wanna use an if-else so someones gonna have to explain why that is
-        // } while (sec < timeout);
-        
-        time_t timer;
-        struct tm * info;
-        time( &timer);
-        info = int tm_sec; 
-        
-        // int timeout (int seconds);{ 
-            if (timeout == 0){
-                return 0;
-            }
-            else if (timeout > count){
-                exit();
-            }
-            else {
-                return count;
-            }
-            
- // end of my work
-            
 
         if(parallel){
             
@@ -134,13 +171,9 @@ int main() {
                     exit(1);
                 }
             }
+            // call timeout handler
+            timeoutHandlerParallel(timeout, pids, count);
             
-            // parent proccess will wait for all processes to finish
-            for(int i = 0; i < count; i++){
-                waitpid(pids[i], &stat, 0);
-                // can comment out just here to check if processes are completing
-                printf("process %d is complete\n", pids[i]);
-            }
 
         }else{
             for(int i = 0; i < count; i++){
@@ -168,8 +201,8 @@ int main() {
                 // parent process will wait til here child process is done
                 }else{
                     // wait for child process to finish 
-                    wait(NULL);
-                }
+                    timeoutHandlerSequential(pid, timeout);
+                }   
             }
         }
         
