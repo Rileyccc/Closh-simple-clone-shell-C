@@ -143,7 +143,7 @@ int main() {
         //array to keep track of forked pids for parrallel proccesses 
         int pids[count];
         //variable to hold pid for sequential proccesses
-        int pid;
+        int pid = -1;
 
         if(parallel){
             
