@@ -16,7 +16,7 @@ and a timeout specifying the maximum duration of each process. Our code can be
 broken down into 4 major parts: The Main Parallel Sequence, The Main Sequential
 Sequence, The Parallel Timeout Sequence, and The Sequential Timeout Sequence.
 
-**Main Parallel - main(), if(parallel)**
+## Main Parallel - main(), if(parallel)
 
 In main, just below the parsing code, we first initialise an array to keep track of the
 forked pids for parallel processes. Then, if our process is parallel, we run a for loop
@@ -31,7 +31,7 @@ to the console that the process can not be created and exit the loop.
 Finally, once the for loop has completed, we send the specified timeout, pids, and
 count variables to our parallel timeout handler.
 
-**Main Sequential - main(), else**
+## Main Sequential - main(), else
 
 In main, just below the parsing code, we first initialise a variable to hold our pid for
 sequential processes. Then if our process is sequential, we run a for loop from 0 to
@@ -42,7 +42,7 @@ parallel sequence, however before the end of each loop, if the pid is greater th
 then the parent process will wait until the child process is done by sending the
 specified timeout and pid to the sequential timeout handler.
 
-**Parallel Timeout - timeoutHandlerParallel()**
+## Parallel Timeout - timeoutHandlerParallel()
 
 
 This handler, which is called at the end of the main parallel sequence, takes the time
@@ -65,7 +65,7 @@ Once we have exited the initial while loop, it is then time to kill processes th
 incomplete using SIGKILL, and print to the console that the specified process has
 been terminated due to timeout.
 
-**SequentialTimeout - timeoutHandlerSequential()**
+## SequentialTimeout - timeoutHandlerSequential()
 
 This handler, which is called at the end of the main sequential sequence, runs in a
 similar fashion to the parallel timeout handler. However, once after and difference
