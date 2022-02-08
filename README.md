@@ -1,8 +1,11 @@
 # COSC 315: Operating Systems - Project 1
 
 February 07 2022
+
 Riley Clark - Main and Timeout Sequences
+
 Reid Folk - Documentation
+
 Aalia Omarali - Timeout Sequences
 
 For this assignment, our team was tasked with designing and implementing a
